@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LiveSky Odyssey</title>
+    
+    <!-- Import Montserrat and Quicksand Fonts -->
+    <link href="https://fonts.google.com/specimen/Noto+Sans+Canadian+Aboriginal" rel="stylesheet">
+
+    <style>
+        /* General Styles */
+        body {
+            margin: 0;
+            font-family: 'Montserrat', sans-serif;
+            text-align: center;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: url('images/building5.jpg') no-repeat center center/cover;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-shadow: 2px 2px 5px black;
+            position: relative;
+            overflow: hidden;
+            padding-top: 50px; /* Adjusted padding to prevent overlap */
+        }
+
+        .title {
+            font-size: 50px;
+            font-weight: 800;
+            font-family: 'Noto+Sans+Canadian+Aboriginal';
+            z-index: 2;
+            margin-top: -100px; /* Adjusted positioning */
+        }
+
+        /* Dotted Slanted Circle */
+        .dotted-circle {
+            position: absolute;
+            width: 300px;
+            height: 600px;
+            border: 2px dashed rgba(255, 254, 254, 0.733);
+            border-radius: 80%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg) skew(10deg, 10deg);
+            z-index: 1;
+        }
+
+        /* Transparent Blurred Box */
+        .glass-box {
+            position: relative;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 20px 35px;
+            border-radius: 15px;
+            text-align: center;
+            display: inline-block;
+            z-index: 2;
+            margin-top: 20px; /* Adjusted positioning */
+        }
+
+        /* Style for the "Precise weather, precisely for you" text */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .tagline {
+            font-size: 60px;
+            color: white;
+            font-weight: 400;
+            margin: 0;
+            font-family: 'Montserrat', sans-serif;
+            animation: fadeInUp 1.5s ease-in-out;
+            text-align: center;
+            margin-top: 20px; /* Adjusted positioning */
+        }
+
+        .custom-image {
+            width: 120px;
+            height: 120px;
+            vertical-align: middle;
+        }
+
+        /* Transparent Button */
+        .start-btn {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 12px 24px;
+            font-size: 20px;
+            color: white;
+            cursor: pointer;
+            border-radius: 25px;
+            transition: 0.3s;
+            margin-top: 50px; /* Adjusted positioning */
+            z-index: 2;
+            position: relative;
+        }
+
+        .start-btn:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Hero Section -->
+    <div class="hero">
+        <h1 class="title">LiveSky Odyssey</h1>
+
+        <!-- Dotted Circle -->
+        <div class="dotted-circle"></div>
+
+        <!-- Glass Box with Tagline -->
+        
+            <p class="tagline">Precise <img src="images/sun.jpg" alt="Custom Image" class="custom-image"> weather,<br> precisely for you.</p>
+        
+
+        <br>
+        <button class="start-btn" onclick="goToNextPage()">Let's Start →</button>
+    </div>
+
+    <script>
+        function goToNextPage() {
+            window.location.href = "p2.html"; // Change this to your actual next page
+        }
+    </script>
+
+</body>
+</html>

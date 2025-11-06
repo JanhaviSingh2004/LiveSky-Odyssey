@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Weather Explorer</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: url('images/P2.jpg') no-repeat center center fixed;
+      background-size: cover;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      backdrop-filter: brightness(0.6);
+      position: relative;
+      overflow: hidden;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 2rem;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 1rem 2rem;
+      border-radius: 12px;
+    }
+
+    .btn-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      z-index: 1;
+    }
+
+    button {
+      padding: 1rem 2.5rem;
+      font-size: 1.1rem;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: rgba(36, 167, 179, 0.584);
+      color: rgb(255, 255, 255);
+      backdrop-filter: blur(10px);
+      font-weight: bold;
+    }
+
+    button:hover {
+      background-color: rgba(255, 255, 255, 0.4);
+      transform: scale(1.05);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+    }
+
+    #mascot {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 80px;
+      transform: translate(-50%, -50%);
+      transition: top 0.5s ease, left 0.5s ease;
+      pointer-events: none;
+      z-index: 10;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>What’s the Weather Mood Today?</h1>
+
+  <div class="btn-container">
+    <button onclick="checkWeather(event)">🌤 Live Skies</button>
+    <button onclick="choosePlace(event)">🗺 SkySpot Finder</button>
+    <button onclick="recommendTravel(event)">✈ WanderWise</button>
+  </div>
+
+  <!-- Mascot image -->
+  <img id="mascot" src="images/mascot.png" alt="Mascot" />
+
+  <script>
+  const mascot = document.getElementById('mascot');
+
+  // Follow the mouse
+  document.addEventListener('mousemove', (e) => {
+    mascot.style.left = e.clientX + 'px';
+    mascot.style.top = e.clientY + 'px';
+    window.mouseX = e.clientX;
+    window.mouseY = e.clientY;
+  });
+
+  function moveMascotToButton(button) {
+    const rect = button.getBoundingClientRect();
+    mascot.style.left = rect.left + rect.width / 2 + 'px';
+    mascot.style.top = rect.top + rect.height / 2 + 'px';
+
+    // Optional: return to cursor after 1.5s
+    setTimeout(() => {
+      mascot.style.left = window.mouseX + 'px';
+      mascot.style.top = window.mouseY + 'px';
+    }, 1500);
+  }
+
+  function checkWeather(event) {
+    moveMascotToButton(event.target);
+    window.location.href = "p3.html";
+  }
+
+  function choosePlace(event) {
+    moveMascotToButton(event.target);
+    window.location.href = "p4.html";
+  }
+
+  function recommendTravel(event) {
+    moveMascotToButton(event.target);
+    window.location.href = "p5.html";
+  }
+</script>
+
+</body>
+</html>

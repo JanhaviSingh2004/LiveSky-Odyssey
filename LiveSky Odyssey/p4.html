@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SkySpot Finder</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: url('images/bg.jpg') no-repeat center center/cover;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      color: #fff;
+    }
+
+    .weather-container {
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(15px);
+      border-radius: 20px;
+      padding: 30px 25px;
+      width: 100%;
+      max-width: 450px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      text-align: center;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    input {
+      width: 80%;
+      padding: 10px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 8px;
+      outline: none;
+    }
+
+    button {
+      padding: 10px 20px;
+      margin-top: 10px;
+      border: none;
+      background-color: #00aaff;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #008dd0;
+    }
+
+    .weather-info {
+      margin-top: 20px;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    .weather-info img {
+      width: 100px;
+      height: 100px;
+      margin: 10px 0;
+    }
+
+    .error {
+      color: #ff5555;
+      font-weight: bold;
+    }
+
+    h2 {
+      font-size: 1.8rem;
+      margin-bottom: 10px;
+    }
+
+    h3 {
+      font-size: 1.4rem;
+      margin-bottom: 10px;
+    }
+
+    p {
+      font-size: 1.1rem;
+      margin: 5px 0;
+    }
+
+    @media(max-width: 480px) {
+      .weather-container {
+        padding: 20px;
+      }
+
+      input {
+        width: 100%;
+      }
+
+      .weather-info img {
+        width: 80px;
+        height: 80px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="weather-container">
+    <h2>SkySpot Finder</h2>
+    <input type="text" id="city" placeholder="Enter city name">
+    <button onclick="getWeather()">Get Weather</button>
+    <div class="weather-info" id="weather-info"></div>
+  </div>
+
+  <script>
+    const countryList = [
+      "india", "united states", "canada", "germany", "france", "italy", "brazil", "russia", 
+      "japan", "china", "australia", "mexico", "spain", "argentina", "south africa", "united kingdom",
+      "bangladesh", "pakistan", "nigeria", "egypt", "turkey", "indonesia", "saudi arabia"
+    ];
+
+    function capitalize(text) {
+      return text.charAt(0).toUpperCase() + text.slice(1);
+    }
+
+    async function getWeather() {
+      const city = document.getElementById('city').value.trim().toLowerCase();
+      const apiKey = '30e42fd27464024a1c78c545b41c1ace';
+      const output = document.getElementById('weather-info');
+      output.innerHTML = '';
+
+      if (!city || !/^[a-zA-Z\s]+$/.test(city)) {
+        output.innerHTML = `<p class="error">Please enter a valid city name.</p>`;
+        return;
+      }
+
+      if (countryList.includes(city)) {
+        output.innerHTML = `<p class="error">Please enter a city, not a country.</p>`;
+        return;
+      }
+
+      const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
+
+        if (data.cod !== 200) {
+          output.innerHTML = `<p class="error">City not found. Please try again.</p>`;
+          return;
+        }
+
+        const weatherMain = data.weather[0].main.toLowerCase();
+        let icon = 'clear.png';
+
+        if (weatherMain.includes('cloud')) icon = 'cloud.png';
+        else if (weatherMain.includes('rain') || weatherMain.includes('drizzle')) icon = 'rain.png';
+        else if (weatherMain.includes('snow')) icon = 'snow.png';
+        else if (weatherMain.includes('thunder')) icon = 'thunder.png';
+        else if (weatherMain.includes('clear')) icon = 'clear.png';
+
+        output.innerHTML = `
+          <h3>${data.name}, ${data.sys.country}</h3>
+          <img src="images/${icon}" alt="${weatherMain}">
+          <p><strong>${capitalize(data.weather[0].description)}</strong></p>
+          <p>Temperature: ${Math.round(data.main.temp)}°C</p>
+          <p>Feels Like: ${Math.round(data.main.feels_like)}°C</p>
+          <p>Humidity: ${data.main.humidity}%</p>
+          <p>Wind Speed: ${data.wind.speed} km/h</p>
+        `;
+      } catch (error) {
+        output.innerHTML = `<p class="error">Something went wrong. Try again later.</p>`;
+      }
+    }
+  </script>
+</body>
+</html>

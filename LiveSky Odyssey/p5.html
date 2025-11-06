@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Wander Wise</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: url('images/lightmode.jpg') no-repeat center center/cover;
+      margin: 0;
+      padding: 0;
+      color: #fff;
+    }
+
+    .container {
+      padding: 30px;
+      max-width: 800px;
+      margin: 60px auto;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      animation: fadeIn 0.8s ease;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+
+    p.subtitle {
+      text-align: center;
+      font-size: 16px;
+      margin-bottom: 30px;
+      color: #ddd;
+    }
+
+    input, button, select {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      box-sizing: border-box;
+      background-color: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
+
+    input::placeholder {
+      color: #bbb;
+    }
+
+    select {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    button {
+      background-color: #00b4d8;
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.2s ease;
+    }
+
+    button:hover {
+      background-color: #0096c7;
+      transform: scale(1.02);
+    }
+
+    .result {
+      margin-top: 20px;
+      padding: 20px;
+      background-color: rgba(255, 255, 255, 0.1);
+      color: #f1f1f1;
+      border-left: 5px solid #00b4d8;
+      border-radius: 10px;
+    }
+
+    .spinner {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 40px;
+    }
+
+    .spinner div {
+      width: 10px;
+      height: 10px;
+      margin: 3px;
+      border-radius: 50%;
+      background: #00b4d8;
+      animation: bounce 0.6s infinite alternate;
+    }
+
+    .spinner div:nth-child(2) { animation-delay: 0.2s; }
+    .spinner div:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes bounce {
+      to { transform: translateY(-100%); opacity: 0.3; }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .toggle-dark {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(0, 0, 0, 0.6);
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 6px;
+      cursor: pointer;
+      z-index: 9999;
+      backdrop-filter: blur(5px);
+    }
+
+    .dark-mode {
+      background: url('images/darkmode.jpg') no-repeat center center/cover;
+      color: white;
+    }
+
+    .dark-mode .container {
+      background: rgba(20, 20, 20, 0.7);
+    }
+
+    .dark-mode .result {
+      background-color: rgba(255, 255, 255, 0.1);
+      border-left-color: #00b4d8;
+    }
+
+    #map {
+      width: 100%;
+      height: 300px;
+      border-radius: 8px;
+      margin-top: 20px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <button class="toggle-dark" onclick="toggleDarkMode()">🌙 Dark Mode</button>
+
+  <div class="container">
+    <h1>Wander Wise</h1>
+    <p class="subtitle">Plan your trip anywhere in the world with real-time travel info!</p>
+
+    <input id="place-input" type="text" placeholder="Enter a city" />
+    <select id="transport-mode">
+      <option value="Flight">✈ Flight</option>
+      <option value="Train">🚆 Train</option>
+      <option value="Bus">🚌 Bus</option>
+      <option value="Car">🚗 Car</option>
+    </select>
+    <button onclick="planTrip()">Get Travel Info</button>
+
+    <div id="loader" class="spinner" style="display:none;">
+      <div></div><div></div><div></div>
+    </div>
+
+    <div class="result" id="output"></div>
+    <div id="map"></div>
+  </div>
+
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA_QJAEeHOfSYFjAHXS7T5RHlDPqs2jNEk&libraries=places,geometry,directions"></script>
+  <script>
+    let autocomplete, map, marker, directionsService, directionsRenderer;
+
+    function initAutocomplete() {
+      const input = document.getElementById('place-input');
+      autocomplete = new google.maps.places.Autocomplete(input);
+      autocomplete.addListener('place_changed', () => {
+        const place = autocomplete.getPlace();
+        if (!place.geometry) return;
+        initMap(place.geometry.location);
+      });
+    }
+
+    function initMap(location) {
+      document.getElementById('map').style.display = 'block';
+      if (!map) {
+        map = new google.maps.Map(document.getElementById('map'), {
+          center: location,
+          zoom: 10,
+        });
+        marker = new google.maps.Marker({ map: map });
+        directionsService = new google.maps.DirectionsService();
+        directionsRenderer = new google.maps.DirectionsRenderer();
+        directionsRenderer.setMap(map);
+      }
+      map.setCenter(location);
+      marker.setPosition(location);
+    }
+
+    function toggleDarkMode() {
+      document.body.classList.toggle("dark-mode");
+    }
+
+    function getClothingRecommendation(temp) {
+      if (temp <= 10) return "Heavy jackets, thermals, gloves";
+      if (temp <= 20) return "Light jackets, full sleeves";
+      if (temp <= 30) return "Cotton clothes, sunglasses";
+      return "Very light clothes, hats, sunscreen";
+    }
+
+    function planTrip() {
+      const city = document.getElementById('place-input').value;
+      const transport = document.getElementById('transport-mode').value;
+      if (!city) return alert("Please enter a city");
+
+      const output = document.getElementById('output');
+      const loader = document.getElementById('loader');
+
+      output.innerHTML = '';
+      loader.style.display = 'flex';
+
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+          const origin = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+
+          fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=30e42fd27464024a1c78c545b41c1ace&units=metric`)
+            .then(res => res.json())
+            .then(data => {
+              loader.style.display = 'none';
+              const temp = data.main.temp;
+              const weather = data.weather[0].main;
+              const alertMsg = (weather === 'Thunderstorm' || weather === 'Snow' || weather === 'Extreme')
+                              ? '⚠ Weather Alert! Please check forecasts before travel.'
+                              : '✅ No major weather alerts.';
+              const clothing = getClothingRecommendation(temp);
+
+              output.innerHTML = `
+                <h2>Travel Info for ${city}</h2>
+                <p><strong>🌡 Temperature:</strong> ${temp}°C</p>
+                <p><strong>☁ Weather:</strong> ${weather}</p>
+                <p><strong>🚨 Weather Alert:</strong> ${alertMsg}</p>
+                <p><strong>👕 Recommended Clothing:</strong> ${clothing}</p>
+                <p><strong>🏨 Stay Options:</strong> Use Booking or Airbnb for hotels, hostels, or rentals.</p>
+                <p><strong>📍 Local Attractions:</strong> Search on Google Maps or TripAdvisor for must-visit places in ${city}.</p>
+                <p><strong>🛣 Preferred Transport:</strong> ${transport}</p>
+                <p><strong>🗺 Routes & Transit:</strong> Use Google Maps for routes from your location to ${city}, or check local transport apps.</p>
+              `;
+
+              const destination = new google.maps.LatLng(data.coord.lat, data.coord.lon);
+              const request = {
+                origin: origin,
+                destination: destination,
+                travelMode: google.maps.TravelMode.DRIVING,
+              };
+
+              directionsService.route(request, function(result, status) {
+                if (status === google.maps.DirectionsStatus.OK) {
+                  directionsRenderer.setDirections(result);
+                } else {
+                  alert("Directions request failed due to " + status);
+                }
+              });
+            })
+            .catch(() => {
+              loader.style.display = 'none';
+              output.innerHTML = '<p>❌ Could not fetch data. Check city name or try again.</p>';
+            });
+        });
+      }
+    }
+
+    google.maps.event.addDomListener(window, 'load', initAutocomplete);
+  </script>
+</body>
+</html>
